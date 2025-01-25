@@ -1,36 +1,35 @@
-import sys
 from collections import deque
-input = sys.stdin.readline
 
+def find_min_time(N, K):
+    max_pos = 100001  # 최대 위치 제한
+    visited = [False] * max_pos
+    times = [-1] * max_pos
 
-def bfs(x, end):
-    q = deque()
-    q.append(x)
+    q = deque([(N, 0)])  # (위치, 시간)
+    visited[N] = True
+    times[N] = 0
 
     while q:
-        x = q.popleft()
-        if x == end:
-            return t[x]
+        pos, time = q.popleft()
 
-        if -1 < x*2 < max_num and visited[x*2] == 0:
-            q.appendleft(x*2)
-            t[x*2] = t[x]
-            visited[x*2] = 1
+        if pos == K:  # 목표 지점 도달
+            return time
 
-        if -1 < x-1 < max_num and visited[x-1] == 0:
-            q.append(x-1)
-            t[x-1] = t[x]+1
-            visited[x-1] = 1
+        # 순간이동 (2*X) - 0초 소요되므로 먼저 처리
+        if pos * 2 < max_pos and not visited[pos * 2]:
+            visited[pos * 2] = True
+            times[pos * 2] = time
+            q.appendleft((pos * 2, time))  # 우선순위가 높으므로 앞쪽에 추가
 
-        if -1 < x+1 < max_num and visited[x+1] == 0:
-            q.append(x+1)
-            t[x+1] = t[x]+1
-            visited[x+1] = 1
+        # 걷기 (X-1, X+1) - 1초 소요
+        for next_pos in (pos - 1, pos + 1):
+            if 0 <= next_pos < max_pos and not visited[next_pos]:
+                visited[next_pos] = True
+                times[next_pos] = time + 1
+                q.append((next_pos, time + 1))
 
+    return -1  # 도달할 수 없는 경우
 
+# 입력 받기
 N, K = map(int, input().split())
-max_num = 10**5+1
-t = [0] * max_num
-visited = [0] * max_num
-
-print(bfs(N, K))
+print(find_min_time(N, K))
