@@ -1,41 +1,42 @@
 import sys
-import heapq
+
 input = sys.stdin.readline
 
 
+def find_parent(parent, x):
+    if parent[x] != x:
+        parent[x] = find_parent(parent, parent[x])
+    return parent[x]
+
+
+def union_parent(parent, a, b):
+    a = find_parent(parent, a)
+    b = find_parent(parent, b)
+
+    if a < b:
+        parent[b] = a
+    else:
+        parent[a] = b
+
+
 def solve():
-    visited = [False] * (n+1)
-    heap = [(0, 1)] # (가중치, 정점)
+    edges.sort(key=lambda x: x[2])
 
-    edges = []
-    total_cost = 0
+    parent = [i for i in range(n+1)]
+    mst_edges = []
 
-    while heap and len(edges) < n-1:
-        cost, node = heapq.heappop(heap)
+    for a, b, c in edges:
+        if find_parent(parent, a) != find_parent(parent, b):
+            union_parent(parent, a, b)
+            mst_edges.append(c)
 
-        if visited[node]:
-            continue
-
-        visited[node] = True
-        total_cost += cost
-
-        if node != 1:
-            edges.append(cost)
-
-        for next_node, next_cost in graph[node]:
-            if not visited[next_node]:
-                heapq.heappush(heap, (next_cost, next_node))
-
-    edges.sort()
-
-    return total_cost - edges[-1]
+    return sum(mst_edges) - max(mst_edges)
 
 
 n, m = map(int, input().split())
-graph = [[] for _ in range(n+1)]
+edges = []
 for _ in range(m):
     a, b, c = map(int, input().split())
-    graph[a].append((b, c))
-    graph[b].append((a, c))
+    edges.append((a, b, c))
 
 print(solve())
