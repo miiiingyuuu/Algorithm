@@ -16,6 +16,8 @@ input = sys.stdin.readline
 
 
 def solve():
+    visited = [[False] * 8 for _ in range(8)]
+
     q = deque()
     q.append((7, 0))
 
@@ -33,7 +35,8 @@ def solve():
             for d in range(9):
                 nx = x + dx[d]
                 ny = y + dy[d]
-                if 0 <= nx < 8 and 0 <= ny < 8 and board[nx][ny] != '#':
+                if 0 <= nx < 8 and 0 <= ny < 8 and board[nx][ny] != '#' and not visited[nx][ny]:
+                    visited[nx][ny] = True
                     q.append((nx, ny))
 
         # 2. 벽이 행 아래로 이동
@@ -44,6 +47,9 @@ def solve():
         # 3. 캐릭터가 움직일 수 있는 장소 방문 여부 조정 및 벽과 사람이 만났는지 확인
         # 벽과 충돌한 요소들은 제거
         q = deque([(x, y) for x, y in q if board[x][y] == '.'])
+
+        # 어떻게든 목적지에만 도착하면 되므로 방문여부를 다시 초기화
+        visited = [[False] * 8 for _ in range(8)]
 
     return 0
 
