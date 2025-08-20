@@ -1,25 +1,21 @@
 import sys
-import heapq
+from collections import deque
 
 input = sys.stdin.readline
-INF = float('inf')
 
 
-def solve(start):
-    distance = [INF] * (n+1)
-    distance[start] = 0
-    q = [(0, start)]   # (거리, 노드)
+def solve():
+    distance = [-1] * (n+1)
+    distance[x] = 0
+    q = deque([x])
 
     while q:
-        dist, now = heapq.heappop(q)
-
-        if dist > distance[now]:
-            continue
+        now = q.popleft()
 
         for nxt in graph[now]:
-            if distance[nxt] > dist + 1:
-                distance[nxt] = dist + 1
-                heapq.heappush(q, (distance[nxt], nxt))
+            if distance[nxt] == -1:
+                distance[nxt] = distance[now] + 1
+                q.append(nxt)
 
     return distance
 
@@ -31,7 +27,7 @@ for _ in range(m):
     a, b = map(int, input().split())
     graph[a].append(b)
 
-result = solve(x)
+result = solve()
 
 ans = [i for i in range(1, n+1) if result[i] == k]
 
