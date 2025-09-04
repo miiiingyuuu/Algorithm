@@ -1,15 +1,24 @@
-# 보기에서 주어진 행렬의 번호 값을 잘 확인해야함
+import sys
+
+input = sys.stdin.readline
+
 
 N = int(input())
-arr = [[0]*1001 for _ in range(1001)]
-for n in range(1, N+1):
-    sj, si, w, h = map(int, input().split())
-    for i in range(si, si+h):
-        for j in range(sj, sj+w):
-            arr[i][j] = n
+arr = [[-1] * 1001 for _ in range(1001)]
 
-ans = [0] * (N+1)
-for lst in arr:
-    for i in lst:
-        ans[i] += 1
-print(*ans[1:], end='')
+max_h, max_w = 0, 0
+for i in range(N):
+    r, c, w, h = map(int, input().split())
+
+    if max_h < c + h:
+        max_h = c + h
+
+    for j in range(c, c + h):
+        arr[j][r:(r + w)] = [i] * w
+
+for n in range(N):
+    cnt = 0
+    for i in range(max_h):
+        cnt += arr[i].count(n)
+
+    print(cnt)
